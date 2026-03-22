@@ -94,6 +94,11 @@ export default function CreateCoursePage() {
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
+  // --- Auto Generate Modal States ---
+  const [isAutoGenerateModalOpen, setIsAutoGenerateModalOpen] = useState(false);
+  const [aiVideoLinks, setAiVideoLinks] = useState("");
+  const [aiAdditionalInfo, setAiAdditionalInfo] = useState("");
+
   const updateCurrentTopic = (field: keyof TopicInsert, value: any) => {
     setCurrentTopic((prev) => ({ ...prev, [field]: value }));
   };
@@ -188,6 +193,7 @@ export default function CreateCoursePage() {
 
   // --- AI Feature: Auto Generate Curriculum ---
   const handleAutoGenerate = async () => {
+    setIsAutoGenerateModalOpen(false);
     if (!title.trim()) {
       toast({
         title: "Missing Title",
@@ -213,6 +219,8 @@ export default function CreateCoursePage() {
           description,
           level,
           tags: tagList,
+          referenceVideos: aiVideoLinks,
+          additionalInfo: aiAdditionalInfo,
         }
       );
 
@@ -387,7 +395,7 @@ export default function CreateCoursePage() {
           </div>
           <div className="flex gap-2">
             <BrutalButton
-              onClick={handleAutoGenerate}
+              onClick={() => setIsAutoGenerateModalOpen(true)}
               disabled={isGenerating || !title}
               className="bg-black text-white hover:bg-black/70"
             >
@@ -706,6 +714,55 @@ export default function CreateCoursePage() {
           Publish Course ({topics.length} topics)
         </BrutalButton>
       </div>
+
+      {/* Auto Generate Modal */}
+      {isAutoGenerateModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <BrutalCard className="w-full max-w-lg p-6 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col gap-4">
+            <div className="flex justify-between items-center border-b-2 border-black pb-2">
+              <h2 className="text-xl font-black uppercase">Auto Generate Course</h2>
+              <button onClick={() => setIsAutoGenerateModalOpen(false)} className="hover:text-red-500">
+                <X size={24} />
+              </button>
+            </div>
+            
+            <p className="text-sm font-medium text-muted-foreground">
+              Provide optional video links or extra details. The AI will use your provided videos and ensure any additional videos it finds are real and relevant!
+            </p>
+
+            <div>
+              <label className="block text-sm font-bold mb-1 uppercase">Reference Video Links / IDs (Optional)</label>
+              <textarea
+                value={aiVideoLinks}
+                onChange={(e) => setAiVideoLinks(e.target.value)}
+                placeholder="e.g. https://youtube.com/watch?v=12345, dQw4w9WgXcQ"
+                className="w-full px-3 py-2 border-2 border-black bg-white rounded-md font-mono text-sm resize-none h-20 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+              />
+              <p className="text-xs text-muted-foreground mt-1 font-medium">Comma-separated URLs or IDs are both supported.</p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold mb-1 uppercase">Additional Info (Optional)</label>
+              <textarea
+                value={aiAdditionalInfo}
+                onChange={(e) => setAiAdditionalInfo(e.target.value)}
+                placeholder="e.g. Focus on practical examples, avoid long theory..."
+                className="w-full px-3 py-2 border-2 border-black bg-white rounded-md font-mono text-sm resize-none h-24 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all"
+              />
+            </div>
+
+            <div className="mt-4 flex justify-end gap-2">
+              <BrutalButton variant="outline" onClick={() => setIsAutoGenerateModalOpen(false)}>
+                Cancel
+              </BrutalButton>
+              <BrutalButton variant="primary" onClick={handleAutoGenerate}>
+                <Sparkles size={16} className="mr-2" />
+                Proceed
+              </BrutalButton>
+            </div>
+          </BrutalCard>
+        </div>
+      )}
     </Layout>
   );
 }

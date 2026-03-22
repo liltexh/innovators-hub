@@ -13,19 +13,35 @@ export const aiService = {
     title: string,
     description: string,
     level: CourseLevel,
-    tags: string[] = []
+    tags: string[] = [],
+    referenceVideos: string = "",
+    additionalInfo: string = ""
   ): Promise<TopicInsert[]> {
+    let extraContext = "";
+    let extraRules = "";
+    let ruleIndex = 1;
+
+    if (referenceVideos && referenceVideos.trim() !== "") {
+      extraContext += `\n    User Reference Videos: "${referenceVideos}"`;
+      extraRules += `\n    ${ruleIndex++}. PROVIDED REFERENCE VIDEOS FIRST: You MUST immediately extract and use these provided YouTube videos. Extract the 11-char video ID from their input. Do NOT run Google Search for these specific videos to save time—just extract the ID and assign it to the 'video_url' field for relevant topics.`;
+    }
+
+    if (additionalInfo && additionalInfo.trim() !== "") {
+      extraContext += `\n    User Additional Info: "${additionalInfo}"`;
+      extraRules += `\n    ${ruleIndex++}. ADDITIONAL INFO: Strongly adhere to any instructions inside "User Additional Info".`;
+    }
+
     const prompt = `Create a professional, high-impact curriculum for a ${level} course.
     Title: "${title}"
     Context: "${description}"
-    Tags: ${tags.join(", ")}
+    Tags: ${tags.join(", ")}${extraContext}
     
-    CRITICAL QUALITY & RELIABILITY RULES:
-    1. RELIABLE VIDEOS ONLY: You MUST use Google Search to find REAL, ACTIVE YouTube videos that actually exist right now. Verify the exact 11-character video ID is correct. Do not guess or hallucinate IDs.
-    2. VIDEO REUSE STRATEGY: You CAN and ARE ENCOURAGED to reuse the same comprehensive "master" tutorial video (e.g., a 2-hour crash course) across multiple topics, as long as the content at that specific 'start_playing_at' timestamp perfectly aligns with the topic. Calculate the correct 'start_playing_at' (in seconds) for each sub-topic. This is preferred over using many small, potentially low-quality videos.
-    3. TOPIC COUNT: Generate 5-15 topics (up to 20 for complex subjects if the title:  "${title}" is ment to be long.).
-    4. LONG SUMMARIES: Each topic must have an extremely thorough, highly detailed, and educational summary. It should explain the concepts so perfectly that a student can fully learn and understand the topic just by reading the summary alone, even if they never watch the video.
-    5. DATA STRUCTURE:
+    CRITICAL QUALITY & RELIABILITY RULES:${extraRules}
+    ${ruleIndex++}. RELIABLE VIDEOS ONLY: For any topics NOT covered by the provided reference videos, you MUST use Google Search to find REAL, ACTIVE YouTube videos. Verify the exact 11-character video ID is correct. Do not guess or hallucinate IDs.
+    ${ruleIndex++}. VIDEO REUSE STRATEGY: You CAN and ARE ENCOURAGED to reuse the same comprehensive "master" tutorial video (e.g., a 2-hour crash course) across multiple topics, as long as the content at that specific timestamp perfectly aligns with the topic.
+    ${ruleIndex++}. TOPIC COUNT: Generate 5-15 topics (up to 20 for complex subjects if the title "${title}" is meant to be long).
+    ${ruleIndex++}. LONG SUMMARIES: Each topic must have an extremely thorough, highly detailed, and educational summary. It should perfectly explain the concepts.
+    ${ruleIndex++}. DATA STRUCTURE:
        - title: Engaging lesson title.
        - summary_text: Deep, highly detailed technical overview (must act as a standalone written lesson).
        - video_url: VERIFIED 11-character YouTube ID of a real, existing video.
@@ -34,13 +50,14 @@ export const aiService = {
        - order_index: Sequential integer.
        - is_ai_generated: true.
 
-    Return the results strictly as an array of objects.`;
+    Return the results strictly as a JSON array of objects.`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }], // Mandatory for video ID verification
+        responseMimeType: "application/json",
       },
     });
 

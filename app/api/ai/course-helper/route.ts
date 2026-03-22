@@ -19,7 +19,9 @@ export async function POST(req: Request) {
           data.title,
           data.description,
           data.level,
-          data.tags
+          data.tags,
+          data.referenceVideos,
+          data.additionalInfo
         );
         return NextResponse.json(topics);
       }

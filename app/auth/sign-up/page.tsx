@@ -9,7 +9,7 @@ import { BrutalButton } from "@/components/ui/BrutalButton";
 import { BrutalCard } from "@/components/ui/BrutalCard";
 import { BrutalInput } from "@/components/ui/BrutalInput";
 import { useSignUp } from "@/hooks/use-sign-up";
-import Link from "next/link"; 
+import Link from "next/link";
 
 import {
   Form,
