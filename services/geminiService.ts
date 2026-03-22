@@ -57,7 +57,6 @@ export const aiService = {
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }], // Mandatory for video ID verification
-        responseMimeType: "application/json",
       },
     });
 
