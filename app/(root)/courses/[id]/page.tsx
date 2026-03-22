@@ -275,7 +275,7 @@ export default function CourseDetailPage() {
                   className={cn("flex items-center gap-4", !canAccessTopics && "opacity-60 cursor-not-allowed")}
                 >
                   <div className={cn(
-                    "w-10 h-10 rounded-md flex items-center justify-center font-medium text-sm flex-shrink-0",
+                    "w-10 h-10 rounded-md flex items-center justify-center font-medium text-sm shrink-0",
                     completed ? "bg-[hsl(142,72%,45%)] text-primary-foreground" : "bg-secondary"
                   )}>
                     {completed ? <Check size={18} /> : index + 1}
@@ -285,8 +285,8 @@ export default function CourseDetailPage() {
                     <span className="font-mono text-xs text-muted-foreground">{topic.duration}</span>
                   </div>
                   {canAccessTopics
-                    ? <Play size={18} className="text-muted-foreground flex-shrink-0" />
-                    : <Lock size={16} className="text-muted-foreground flex-shrink-0" />
+                    ? <Play size={18} className="text-muted-foreground shrink-0" />
+                    : <Lock size={16} className="text-muted-foreground shrink-0" />
                   }
                 </BrutalCard>
               );

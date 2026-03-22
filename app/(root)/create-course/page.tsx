@@ -423,7 +423,7 @@ export default function CreateCoursePage() {
 
               {/* --- THUMBNAIL SELECTOR START --- */}
               <div className="bg-gray-50 border-2 border-black p-3 rounded-lg">
-                <label className="block text-sm font-bold mb-2 uppercase flex items-center gap-2">
+                <label className="text-sm font-bold mb-2 uppercase flex items-center gap-2">
                   <ImageIcon size={16} /> Course Thumbnail
                 </label>
 
