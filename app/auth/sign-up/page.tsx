@@ -9,8 +9,7 @@ import { BrutalButton } from "@/components/ui/BrutalButton";
 import { BrutalCard } from "@/components/ui/BrutalCard";
 import { BrutalInput } from "@/components/ui/BrutalInput";
 import { useSignUp } from "@/hooks/use-sign-up";
-import Link from "next/link";
-import { cn } from "@/lib/utils"; // Assuming you have a standard cn utility
+import Link from "next/link"; 
 
 import {
   Form,
@@ -70,6 +69,7 @@ type SignUpFormValues = z.infer<typeof signUpSchema>;
 export default function SignUpPage() {
   const { signUp, isLoading, error } = useSignUp();
   const [step, setStep] = useState<1 | 2>(1);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signUpSchema),
@@ -221,11 +221,20 @@ export default function SignUpPage() {
                       <FormItem>
                         <FormLabel className="font-bold">Password</FormLabel>
                         <FormControl>
-                          <BrutalInput
-                            type="password"
-                            placeholder="******"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <BrutalInput
+                              type={showPassword ? "text" : "password"}
+                              placeholder="******"
+                              {...field}
+                            />
+                            <button
+                              type="button"
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground hover:text-black transition-colors"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? "HIDE" : "SHOW"}
+                            </button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>

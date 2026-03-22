@@ -1,6 +1,7 @@
 "use client";
 
-import { Zap, AlertCircle, ArrowRight } from "lucide-react";
+import { useState } from "react";
+import {  AlertCircle, ArrowRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,6 +33,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const { signIn, isLoading, error } = useSignIn();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -94,11 +96,20 @@ export default function LoginPage() {
                 <FormItem>
                   <FormLabel className="font-bold">Password</FormLabel>
                   <FormControl>
-                    <BrutalInput
-                      type="password"
-                      placeholder="******"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <BrutalInput
+                        type={showPassword ? "text" : "password"}
+                        placeholder="******"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground hover:text-black transition-colors"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? "HIDE" : "SHOW"}
+                      </button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
